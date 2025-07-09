@@ -1,21 +1,47 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import {
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+  GetStaticProps,
+} from "next";
 import style from "./[id].module.css";
 import fetchOneBook from "@/lib/fetch-one-book";
+import { useRouter } from "next/router";
+import { notFound } from "next/navigation";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export const getStaticPaths = () => {
+  return {
+    paths: [
+      { params: { id: "1" } }, // 파라미터 값은 반드시 문자열로 명시
+      { params: { id: "2" } },
+      { params: { id: "3" } },
+    ],
+    fallback: true, // 대체 or 대비책 설정하는 옵션, fallback: false 인 경우, not found 페이지 반환
+  };
+};
+
+export const getStaticProps = async (context: GetStaticPropsContext) => {
   const id = context.params!.id;
   const book = await fetchOneBook(Number(id));
+
+  if (!book) {
+    return {
+      notFound: true,
+    };
+  } // not found 페이지 렌더링
 
   return {
     props: { book },
   };
 };
+
 export default function Page({
   book,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  if (!book) return "문제가 발생했습니다 다시 시도하세요";
+}: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter();
+
+  if (router.isFallback) return "로딩중입니다"; // fallback 상태 props를 기다리는 중인 상태
+  if (!book) return "문제가 발생했습니다 다시 시도하세요"; // 실제 데이터가 없는 상태
+
   const { id, title, subTitle, description, author, publisher, coverImgUrl } =
     book;
 

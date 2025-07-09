@@ -10,6 +10,7 @@ import {
   InferGetStaticPropsType,
 } from "next";
 import fetchBooks from "@/lib/fetch-books";
+
 // export const getStaticProps = async (context: GetStaticPropsContext) => {
 //   const q = context.query.q;
 //   const books = await fetchBooks(q as string);
@@ -17,6 +18,7 @@ import fetchBooks from "@/lib/fetch-books";
 //     props: { books },
 //   };
 // };
+
 export default function Page() {
   const [books, setBooks] = useState<BookData[]>([]);
   const router = useRouter();
@@ -26,11 +28,13 @@ export default function Page() {
     const data = await fetchBooks(q as string);
     setBooks(data);
   };
+
   useEffect(() => {
     if (q) {
       fetchSearchResult();
     }
-  }, []);
+  }, [q]);
+
   return (
     <div>
       {books.map((book) => (
