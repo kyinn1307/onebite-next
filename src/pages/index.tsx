@@ -6,6 +6,7 @@ import BookItem from "@/components/book-item";
 import { InferGetServerSidePropsType, InferGetStaticPropsType } from "next";
 import fetchBooks from "@/lib/fetch-books";
 import fetchRandomBooks from "@/lib/fetch-random-books";
+import { revalidatePath } from "next/cache";
 
 export const getStaticProps = async () => {
   // 컴포넌트보다 먼저 실행되어서, 컴포넌트에 필요한 데이터를 불러오는 함수
@@ -21,6 +22,7 @@ export const getStaticProps = async () => {
       allBooks,
       recoBooks,
     },
+    // revalidate: 3, // 3초 주기로 재검증
   };
 };
 export default function Home({
